@@ -7,20 +7,16 @@ on:
   workflow_dispatch:
   push:
     branches: [ "trunk" ]
-    paths:
-      - '.github/workflows/appimage.yml'
-      - 'AppRun'
-      - 'version'
-      - 'workflow.sh'
-      - '!**/docker.yml'
-      - '!Dockerfile*'
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
   pull_request:
     branches: [ "trunk" ]
-    paths:
-      - '.github/workflows/appimage.yml'
-      - 'AppRun'
-      - 'version'
-      - 'workflow.sh'
+    paths-ignore:
+      - '.gitignore'
+      - 'LICENSE'
+      - 'README.md'
 
 jobs:
   # Label of the container job
@@ -28,20 +24,28 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        ubuntu_codename: ['focal', 'jammy']
-    container: andy5995/0ad-build-env:${{ matrix.ubuntu_codename }}
-    runs-on: ubuntu-22.04
+        os:
+          - ubuntu-24.04-arm
+          - ubuntu-24.04
+
+    runs-on: ubuntu-latest
     env:
-      ARCH: x86_64
-      WORKSPACE: ${{ github.workspace }}
-      VERSION: 0.0.27-rc1-27645-alpha
-      UBUNTU_CODENAME: ${{ matrix.ubuntu_codename }}
+      VERSION: 0.27.0
+      MINISIGN_KEY: RWTWLbO12+ig3lUExIor3xd6DdZaYFEozn8Bu8nIzY3ImuRYQszIQyyy
     steps:
     - uses: actions/checkout@v4
-    - name: Run Workflow script
+
+    - name: Build AppImage
       run: |
-        chmod 1777 "$WORKSPACE"
-        su 0adbuilder --command "GITHUB_ACTIONS=${GITHUB_ACTIONS} $WORKSPACE/workflow.sh"
+        export HOSTUID=$(id -u) HOSTGID=$(id -g)
+        docker compose -f ./docker-compose.yml run --rm build
+
+    - name: Create sha256sum
+      run: |
+        IMAGE_FILENAME=$(basename `find out/*AppImage`)
+        echo "IMAGE_FILENAME=$IMAGE_FILENAME" >> $GITHUB_ENV
+        cd out
+        sha256sum "$IMAGE_FILENAME" > "$IMAGE_FILENAME.sha256sum"
 
     - name: Release AppImage
       if: ${{ github.ref == 'refs/heads/trunk' }}
@@ -49,19 +53,16 @@ jobs:
       with:
         name: 0ad-${{ env.VERSION }} AppImage
         allowUpdates: True
-        prerelease: ${{ contains(env.VERSION, 'svn') || contains(env.VERSION, 'rc') }}
-        artifacts: "${{ env.WORKSPACE }}/0ad*.AppImage*"
+        prerelease: ${{ contains(env.VERSION, 'rc') }}
+        artifacts: ./out/0ad*.AppImage*
         token: ${{ secrets.GITHUB_TOKEN }}
         omitNameDuringUpdate: True
         omitBodyDuringUpdate: True
         tag: v${{ env.VERSION }}
-        replacesArtifacts: true
+        replacesArtifacts: false
     - name: Upload Artifacts
       if: ${{ github.ref != 'refs/heads/trunk' }}
       uses: actions/upload-artifact@v4
       with:
-        name: AppImage
-        path: ${{ env.WORKSPACE }}/0ad*.AppImage*
-
-
-
+        name: AppImage-${{ matrix.os }}
+        path: ./out/0ad*.AppImage*
