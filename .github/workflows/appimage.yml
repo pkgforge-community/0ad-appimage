@@ -28,7 +28,7 @@ jobs:
           - ubuntu-24.04-arm
           - ubuntu-24.04
 
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
     env:
       VERSION: 0.27.0
       MINISIGN_KEY: RWTWLbO12+ig3lUExIor3xd6DdZaYFEozn8Bu8nIzY3ImuRYQszIQyyy
@@ -44,8 +44,6 @@ jobs:
       run: |
         IMAGE_FILENAME=$(basename `find out/*AppImage`)
         echo "IMAGE_FILENAME=$IMAGE_FILENAME" >> $GITHUB_ENV
-        cd out
-        sha256sum "$IMAGE_FILENAME" > "$IMAGE_FILENAME.sha256sum"
 
     - name: Release AppImage
       if: ${{ github.ref == 'refs/heads/trunk' }}
