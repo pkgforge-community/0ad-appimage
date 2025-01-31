@@ -199,13 +199,14 @@ export LINUXDEPLOY_OUTPUT_VERSION="$VERSION"
 # Create the image
 if [ -z "$ACTION_WORKSPACE" ]; then
 export DEPLOY_GTK_VERSION=3
+ARCH=$(uname -m)
 # Variable used by gtk plugin
 linuxdeploy \
     -d $SOURCE_ROOT/build/resources/0ad.desktop \
     --icon-file=$SOURCE_ROOT/build/resources/0ad.png \
     --icon-filename=0ad \
     --executable $APPDIR/usr/bin/pyrogenesis \
-    --library=/usr/lib/x86_64-linux-gnu/libthai.so.0 \
+    --library=/usr/lib/$ARCH-linux-gnu/libthai.so.0 \
     --custom-apprun=$WORKSPACE/AppRun \
     --appdir $APPDIR \
     --output appimage \
@@ -213,8 +214,8 @@ linuxdeploy \
 fi
 
 DATE_STR=$(date +%y%m%d%H%M)
-OUT_APPIMAGE="0ad-$VERSION-$DATE_STR-$(uname -m).AppImage"
-mv 0_A.D.-$VERSION-$(uname -m).AppImage $OUT_APPIMAGE
+OUT_APPIMAGE="0ad-$VERSION-$DATE_STR-$ARCH.AppImage"
+mv 0_A.D.-$VERSION-$ARCH.AppImage $OUT_APPIMAGE
 sha1sum $OUT_APPIMAGE > "$OUT_APPIMAGE.sha1sum"
 cat "$OUT_APPIMAGE.sha1sum"
 
