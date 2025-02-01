@@ -219,7 +219,7 @@ OUT_APPIMAGE="0ad-$VERSION-$DATE_STR-$ARCH.AppImage"
 
 REPO="0ad-appimage"
 TAG="latest"
-[ -z "$GITHUB_REPOSITORY_OWNER" ] && GITHUB_REPOSITORY_OWNER="0ad-matters"
+GITHUB_REPOSITORY_OWNER="${GITHUB_REPOSITORY_OWNER:-0ad-matters}"
 UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|$REPO|$TAG|*$ARCH.AppImage.zsync"
 
 appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
