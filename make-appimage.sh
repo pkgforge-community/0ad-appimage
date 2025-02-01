@@ -69,11 +69,8 @@ sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade && \
     patchelf \
     python3 \
     rustc   \
-    zlib1g-dev \
-    zsync"
+    zlib1g-dev"
 
-# needed for spidermonkey build
-#export SHELL=/bin/bash
 PREMAKE="premake-5.0.0-beta4-linux.tar.gz"
 if [ ! -f "$PREMAKE" ]; then
   wget https://github.com/premake/premake-core/releases/download/v5.0.0-beta4/$PREMAKE
@@ -108,7 +105,6 @@ fi
   #rm -f source/ps/tests/stub_impl_hack.cpp
 #fi
 
-# Spidermonkey build fails with 7, 8, 9, and 10 on Ubuntu focal?
 cd "$SOURCE_ROOT/libraries"
 /bin/bash -c 'JOBS=$(nproc) ./build-source-libs.sh \
     -j$(nproc)'
