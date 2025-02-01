@@ -45,6 +45,7 @@ sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade && \
     cmake \
     curl \
     $CC \
+    desktop-file-utils \
     libboost-dev    \
     libboost-filesystem-dev \
     libboost-system-dev   \
@@ -68,7 +69,8 @@ sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade && \
     patchelf \
     python3 \
     rustc   \
-    zlib1g-dev"
+    zlib1g-dev \
+    zsync"
 
 # needed for spidermonkey build
 #export SHELL=/bin/bash
@@ -209,13 +211,21 @@ linuxdeploy \
     --library=/usr/lib/$ARCH-linux-gnu/libthai.so.0 \
     --custom-apprun=$WORKSPACE/AppRun \
     --appdir $APPDIR \
-    --output appimage \
     --plugin gtk
 fi
 
 DATE_STR=$(date +%y%m%d%H%M)
 OUT_APPIMAGE="0ad-$VERSION-$DATE_STR-$ARCH.AppImage"
-mv 0_A.D.-$VERSION-$ARCH.AppImage $OUT_APPIMAGE
+
+REPO="0ad-appimage"
+TAG="latest"
+[ -z "$GITHUB_REPOSITORY_OWNER" ] && GITHUB_REPOSITORY_OWNER="0ad-matters"
+UPINFO="gh-releases-zsync|$GITHUB_REPOSITORY_OWNER|$REPO|$TAG|*$ARCH.AppImage.zsync"
+
+appimagetool --comp zstd --mksquashfs-opt -Xcompression-level --mksquashfs-opt 20 \
+	-u "$UPINFO" \
+	"$APPDIR" "$OUT_APPIMAGE"
+
 sha1sum $OUT_APPIMAGE > "$OUT_APPIMAGE.sha1sum"
 cat "$OUT_APPIMAGE.sha1sum"
 
