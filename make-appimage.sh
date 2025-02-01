@@ -48,6 +48,10 @@ cd "$WORKSPACE"
 
 sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade &&
   apt install -y
+    cargo
+    cmake
+    curl
+    $CC
     libboost-dev
     libboost-filesystem-dev
     libboost-system-dev
