@@ -94,14 +94,14 @@ if [ ! -r "$SOURCE_ROOT/source/main.cpp" ]; then
 fi
 
 cd "$SOURCE_ROOT/libraries"
-/bin/bash -c 'JOBS=$(nproc) ./build-source-libs.sh \
-    -j$(nproc)'
+./build-source-libs.sh -j$(nproc)
 
 cd "$SOURCE_ROOT/build/workspaces"
-/bin/bash -c './update-workspaces.sh \
-    --without-pch \
-    -j$(nproc) && \
-  make config=release -C gcc -j$(nproc)'
+./update-workspaces.sh \
+  --without-pch \
+  --with-lto \
+  -j$(nproc)
+make config=release -C gcc -j$(nproc)
 
 cd $WORKSPACE
 data=0ad-$VERSION-unix-data.tar.xz
