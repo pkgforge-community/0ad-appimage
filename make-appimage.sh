@@ -2,6 +2,13 @@
 
 set -ev
 
+if [ -z "$DOCKER_BUILD" ]; then
+  echo "This script is only meant to be used with the linuxdeploy build"
+  echo "helper container."
+  echo "See the 0ad-appimage README for details."
+  exit 1
+fi
+
 if [ -z "$VERSION" ]; then
   echo "VERSION must be set"
   exit 1
@@ -90,20 +97,6 @@ sha1sum -c $source_sum
 if [ ! -r "$SOURCE_ROOT/source/main.cpp" ]; then
   tar -xJf $source
 fi
-  #cd "$SOURCE_ROOT"
-  #build/workspaces/clean-workspaces.sh
-  ## Clean up some extra cruft not picked up by clean-workspaces.sh
-  #find binaries/system/ -type f ! -name readme.txt -delete
-  #rm -f libraries/fcollada/lib/*.a
-  #rm -f build/premake/.*.tmp
-  #rm -rf libraries/source/spidermonkey/lib
-  #rm -f libraries/source/cxxtest-4.4/python/cxxtest/*.pyc
-  #rm -f libraries/source/fcollada/lib/*
-  #rm -rf libraries/source/spidermonkey/include-unix-*
-  #rm -rf libraries/source/spidermonkey/mozjs-78.6.0
-  #rm -f libraries/source/nvtt/lib/*.so
-  #rm -f source/ps/tests/stub_impl_hack.cpp
-#fi
 
 cd "$SOURCE_ROOT/libraries"
 /bin/bash -c 'JOBS=$(nproc) ./build-source-libs.sh \
@@ -167,22 +160,10 @@ cp -a binaries/data/tools $APPDIR/usr/data # for Atlas
 mkdir -p $APPDIR/usr/data/mods
 cp -a binaries/data/mods/mod $APPDIR/usr/data/mods
 
-## Hopefully prevent out-of-space failure when running on a GitHub hosted runner
-#if [ -n "$ACTION_WORKSPACE" ]; then
-  #cd "$SOURCE_ROOT/build/workspaces"
-  #./clean-workspaces.sh
-#fi
-
 cd $SOURCE_ROOT
 cp -a binaries/data/mods/public $APPDIR/usr/data/mods
 
 cd "$WORKSPACE"
-
-## Hopefully prevent out-of-space failure when running on a GitHub hosted runner
-#echo "Removing data from source tree (already copied to ${APPDIR})..."
-#if [ -n "$ACTION_WORKSPACE" ]; then
-  #rm -rf "$SOURCE_ROOT/binaries/data"
-#fi
 
 # Set up output directory
 OUT_DIR="$WORKSPACE/out"
@@ -210,8 +191,7 @@ linuxdeploy \
     --plugin gtk
 fi
 
-DATE_STR=$(date +%y%m%d%H%M)
-OUT_APPIMAGE="0ad-$VERSION-$DATE_STR-$ARCH.AppImage"
+OUT_APPIMAGE="0ad-$VERSION-$ARCH.AppImage"
 
 REPO="0ad-appimage"
 TAG="latest"

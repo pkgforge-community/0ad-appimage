@@ -40,11 +40,6 @@ jobs:
         export HOSTUID=$(id -u) HOSTGID=$(id -g)
         docker compose -f ./docker-compose.yml run --rm build
 
-    - name: Create sha256sum
-      run: |
-        IMAGE_FILENAME=$(basename `find out/*AppImage`)
-        echo "IMAGE_FILENAME=$IMAGE_FILENAME" >> $GITHUB_ENV
-
     - name: Release AppImage
       if: ${{ github.ref == 'refs/heads/trunk' }}
       uses: ncipollo/release-action@v1
@@ -57,7 +52,7 @@ jobs:
         omitNameDuringUpdate: True
         omitBodyDuringUpdate: True
         tag: v${{ env.VERSION }}
-        replacesArtifacts: false
+        replacesArtifacts: true
     - name: Upload Artifacts
       if: ${{ github.ref != 'refs/heads/trunk' }}
       uses: actions/upload-artifact@v4
