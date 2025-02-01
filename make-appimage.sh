@@ -46,37 +46,32 @@ fi
 
 cd "$WORKSPACE"
 
-sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade && \
-    apt install -y  \
-    cargo   \
-    cmake \
-    curl \
-    $CC \
-    desktop-file-utils \
-    libboost-dev    \
-    libboost-filesystem-dev \
-    libboost-system-dev   \
-    libcurl4-gnutls-dev \
-    libenet-dev \
-    libfmt-dev   \
-    libfreetype6-dev    \
-    libgloox-dev    \
-    libicu-dev \
-    libminiupnpc-dev \
-    libogg-dev  \
-    libopenal-dev   \
-    libpng-dev  \
-    libsdl2-dev \
-    libsodium-dev   \
-    libvorbis-dev \
-    libwxgtk3.0-gtk3-dev \
-    libxml2-dev \
-    llvm \
-    m4 \
-    patchelf \
-    python3 \
-    rustc   \
-    zlib1g-dev"
+sudo DEBIAN_FRONTEND=noninteractive -i sh -c "apt update && apt -y upgrade &&
+    libboost-dev
+    libboost-filesystem-dev
+    libboost-system-dev
+    libcurl4-gnutls-dev
+    libenet-dev
+    libfmt-dev
+    libfreetype6-dev
+    libgloox-dev
+    libicu-dev
+    libminiupnpc-dev
+    libogg-dev
+    libopenal-dev
+    libpng-dev
+    libsdl2-dev
+    libsodium-dev
+    libvorbis-dev
+    libwxgtk3.0-gtk3-dev
+    libxml2-dev
+    llvm
+    m4
+    patchelf
+    python3
+    rustc
+    zlib1g-dev
+"
 
 PREMAKE="premake-5.0.0-beta4-linux.tar.gz"
 if [ ! -f "$PREMAKE" ]; then
