@@ -26,5 +26,5 @@ manager](https://github.com/ivan-hc/AM).
 You can build the appimage locally if you have docker installed. While in the
 repo root, to build the latest stable version:
 
-    export HOSTUID=$(id -u) HOSTGID=$(id -g) VERSION=0.27.0
+    export HOSTUID=$(id -u) HOSTGID=$(id -g)
     docker compose -f ./docker-compose.yml  run --rm build
